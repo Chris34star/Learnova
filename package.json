@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "test:content": "node tests/stage4-schema.test.mjs",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json"
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "test:nuru": "node tests/stage5-nuru.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",

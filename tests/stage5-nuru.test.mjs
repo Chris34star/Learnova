@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const sql=readFileSync(new URL('../supabase/migrations/202609030003_stage5_nuru_content_studio.sql',import.meta.url),'utf8');
+const has=(pattern,message)=>assert.match(sql,pattern,message);
+has(/content_suggestions/, 'suggestions are persisted');
+has(/reason text not null/, 'suggestions require an explanation');
+has(/ai_generation_requests/, 'generation authorization is audited');
+has(/authorize_nuru_generation/, 'generation requires an explicit server-side authorization boundary');
+has(/Only platform administrators may generate global drafts/, 'teachers cannot create global drafts');
+has(/new\.status:='draft'/, 'AI questions can never bypass draft');
+has(/normalize_question_text/, 'questions are normalized');
+has(/digest\(new\.normalized_question,'sha256'\)/, 'question fingerprints use SHA-256');
+has(/duplicate_of/, 'exact duplicates are flagged for review');
+has(/current_school_id\(\)/, 'tenant isolation is enforced');
+has(/30/, 'generation requests are rate limited');
+has(/student_id/, 'student-level personalization context is rejected');
+console.log('Stage 5 Nuru schema contract verified.');
