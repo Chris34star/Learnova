@@ -1,0 +1,37 @@
+export const studentDemoData = {
+  name: 'Amani Njoroge',
+  firstName: 'Amani',
+  grade: 'Grade 8',
+  school: 'Greenfield Academy',
+  weeklyGoal: 150,
+  completedThisWeek: 112,
+  streak: 6,
+  subjects: [
+    { name: 'Mathematics', progress: 72, color: 'brand' },
+    { name: 'Science', progress: 81, color: 'emerald' },
+    { name: 'English', progress: 76, color: 'accent' },
+  ],
+  topic: 'Algebra',
+  subtopic: 'Linear Equations',
+  skills: [
+    { name: 'Basic equations', progress: 88 },
+    { name: 'Two-step equations', progress: 74 },
+    { name: 'Word problems', progress: 42 },
+  ],
+  activity: [
+    { day: 'Mon', minutes: 24 },
+    { day: 'Tue', minutes: 32 },
+    { day: 'Wed', minutes: 18 },
+    { day: 'Thu', minutes: 27 },
+    { day: 'Fri', minutes: 11 },
+    { day: 'Sat', minutes: 36 },
+    { day: 'Sun', minutes: 0 },
+  ],
+  skillsLab: {
+    name: 'Web Creator',
+    progress: 38,
+    completed: ['How the Web Works', 'HTML Foundations'],
+    current: 'CSS Foundations',
+    locked: ['Responsive Design', 'JavaScript Basics', 'Build Your First Website', 'Publish Your Project'],
+  },
+};
