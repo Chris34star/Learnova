@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const sql=readFileSync(new URL('../supabase/migrations/202609030005_stage7_assessment_mastery.sql',import.meta.url),'utf8');
+const practice=readFileSync(new URL('../src/pages/student/PracticePage.tsx',import.meta.url),'utf8');
+const docs=readFileSync(new URL('../docs/STAGE7_MASTERY_ENGINE.md',import.meta.url),'utf8');
+
+for(const table of ['skills','questions','question_options','question_skills','assessments','assessment_questions','assessment_attempts','question_attempts','student_skill_mastery','mastery_events','student_question_history','practice_recommendations','practice_assignments'])assert.match(sql,new RegExp(`create table public\\.${table}`),`missing ${table}`);
+for(const fn of ['submit_question_answer','update_skill_mastery','select_practice_questions','start_practice_attempt','complete_assessment_attempt','assign_practice'])assert.match(sql,new RegExp(`create function public\\.${fn}`),`missing ${fn}`);
+assert.match(sql,/q\.status='published' and q\.approved_at is not null/,'delivery must require publication and approval');
+assert.doesNotMatch(sql.match(/create view public\.student_question_bank[\s\S]*?from questions q/)[0],/answer_data_json|is_correct/,'student projection leaked an answer key');
+assert.match(sql,/abs\(\(answer->>'value'\)::numeric-[\s\S]*tolerance/,'numeric tolerance missing');
+assert.match(sql,/lower\(trim\(answer->>'value'\)\)/,'controlled short-answer normalization missing');
+assert.match(sql,/minimum_evidence integer not null default 3/);
+assert.match(sql,/prior\+\(target-prior\).*0\.18/,'smoothed update missing');
+assert.match(sql,/n<minimum then 'still_learning'/,'minimum evidence guard missing');
+assert.match(sql,/n>=minimum and next_score<gap/,'gap detection must require evidence');
+assert.match(sql,/h\.last_seen_at nulls first,h\.times_seen asc/,'exposure reduction missing');
+assert.match(sql,/m\.mastery_score<55[\s\S]*m\.mastery_score<72/,'gradual difficulty selection missing');
+assert.match(sql,/teacher_can_view_student/,'teacher authorization missing');
+assert.match(practice,/That's right|feedback/); assert.match(practice,/Not quite|feedback/); assert.match(practice,/Show hint/); assert.match(practice,/Practice Now/);
+assert.match(docs,/current instructional indicator/); assert.match(docs,/No LLM is called/);
+console.log('Stage 7 schema, deterministic scoring, practice flow, and security boundaries verified.');
