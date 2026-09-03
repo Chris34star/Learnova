@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const sql=readFileSync(new URL('../supabase/migrations/202609030004_stage6_learning_engine.sql',import.meta.url),'utf8');
+const app=readFileSync(new URL('../src/App.tsx',import.meta.url),'utf8');
+for(const table of ['school_course_assignments','learning_sessions','student_content_progress','learning_events','student_projects','student_project_milestones'])assert.match(sql,new RegExp(`create table public\\.${table}`));
+assert.match(sql,/unique\(student_id,content_node_id\)/);
+assert.match(sql,/status='published' and c\.approved_at is not null/);
+assert.match(sql,/status='published' and n\.approved_at is not null/);
+assert.match(sql,/source_content_id=r\.id/);
+assert.match(sql,/current_profile_role\(\)='teacher'.*teacher_classes/s);
+for(const route of ['learn','course/:courseId','course/:courseId/module/:moduleId','lesson/:lessonId','progress','skills','explore'])assert.ok(app.includes(`path="${route}"`),`missing ${route}`);
+console.log('Stage 6 schema, safety boundaries, and routes verified.');
