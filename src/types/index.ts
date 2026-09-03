@@ -1,0 +1,11 @@
+export type UserRole = 'platform_admin' | 'school_admin' | 'teacher' | 'student';
+export type RecordStatus = 'active' | 'inactive' | 'pending';
+export interface School { id:string; name:string; slug:string; logo_url:string|null; school_type:string|null; country:string; county:string|null; city:string|null; contact_email:string|null; contact_phone:string|null; status:'trial'|'active'|'inactive'; created_at:string; updated_at:string }
+export interface Profile { id:string; user_id:string; school_id:string|null; role:UserRole; first_name:string; last_name:string; display_name:string; avatar_url:string|null; phone:string|null; status:RecordStatus; created_at:string; updated_at:string }
+export interface Grade { id:string; school_id:string; name:string; level_number:number|null; display_order:number; is_active:boolean; created_at:string }
+export interface SchoolClass { id:string; school_id:string; grade_id:string; name:string; class_teacher_id:string|null; created_at:string; grades?:Pick<Grade,'name'>; student_profiles?:{count:number}[] }
+export interface Subject { id:string; school_id:string|null; name:string; slug:string; description:string|null; is_global:boolean; status:'active'|'inactive'; created_at:string }
+export interface StudentProfile { id:string; school_id:string; profile_id:string; student_number:string|null; grade_id:string; class_id:string|null; date_of_birth:string|null; status:'active'|'inactive'|'graduated'; created_at:string; profiles?:Pick<Profile,'first_name'|'last_name'|'display_name'>; grades?:Pick<Grade,'name'>; classes?:Pick<SchoolClass,'name'> }
+export interface TeacherProfile { id:string; school_id:string; profile_id:string; staff_number:string|null; title:string|null; created_at:string; profiles?:Pick<Profile,'display_name'|'status'>; teacher_classes?:{class_id:string; classes?:Pick<SchoolClass,'name'>}[] }
+export interface SchoolSettings { id:string; school_id:string; timezone:string; default_study_minutes:number; default_start_time:string|null; default_end_time:string|null; onboarding_completed:boolean; created_at:string; updated_at:string }
+export interface AcademicYear { id:string; school_id:string; name:string; start_date:string; end_date:string; is_current:boolean; created_at:string }

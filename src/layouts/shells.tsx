@@ -1,0 +1,10 @@
+import {Home,BookOpen,Target,Sparkles,TrendingUp,Users,ClipboardList,BarChart3,School,GraduationCap,Layers,Calendar,Library,Settings,Building2,Gauge} from 'lucide-react';
+import {AppShell,type NavItem} from './AppShell';
+const student:NavItem[]=[{label:'Home',to:'/app',icon:Home},{label:'Learn',to:'/app/learn',icon:BookOpen},{label:'Practice',to:'/app/practice',icon:Target},{label:'Skills Lab',to:'/app/skills',icon:Sparkles},{label:'Progress',to:'/app/progress',icon:TrendingUp}];
+const teacher:NavItem[]=[{label:'Overview',to:'/teacher',icon:Home},{label:'Classes',to:'/teacher/classes',icon:School},{label:'Students',to:'/teacher/students',icon:Users},{label:'Assignments',to:'/teacher/assignments',icon:ClipboardList},{label:'Insights',to:'/teacher/insights',icon:BarChart3}];
+const school:NavItem[]=[{label:'Overview',to:'/school',icon:Home},{label:'Students',to:'/school/students',icon:GraduationCap},{label:'Teachers',to:'/school/teachers',icon:Users},{label:'Classes',to:'/school/classes',icon:School},{label:'Grades',to:'/school/grades',icon:Layers},{label:'Subjects',to:'/school/subjects',icon:BookOpen},{label:'Learning Schedule',to:'/school/schedule',icon:Calendar},{label:'Content',to:'/school/content',icon:Library},{label:'Analytics',to:'/school/analytics',icon:BarChart3},{label:'Settings',to:'/school/settings',icon:Settings}];
+const platform:NavItem[]=[{label:'Overview',to:'/platform',icon:Gauge},{label:'Schools',to:'/platform/schools',icon:Building2},{label:'Content Library',to:'/platform/content',icon:Library},{label:'Usage',to:'/platform/usage',icon:BarChart3},{label:'Settings',to:'/platform/settings',icon:Settings}];
+export const StudentShell=()=> <AppShell area="Student workspace" items={student}/>;
+export const TeacherShell=()=> <AppShell area="Teacher workspace" items={teacher}/>;
+export const SchoolShell=()=> <AppShell area="School administration" items={school}/>;
+export const PlatformShell=()=> <AppShell area="Platform administration" items={platform}/>;
