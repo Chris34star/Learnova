@@ -12,7 +12,7 @@ end $$;
 -- Stage 4 demo rows need provisioned admin profiles because governance records always
 -- retain an accountable author. This block safely skips content when demo users are absent.
 do $$ declare platform_author uuid; school_author uuid; greenfield uuid; grade8 uuid; math_subject uuid;
- mathematics uuid; web_creator uuid; algebra uuid; word_problems uuid;
+ mathematics uuid; web_creator uuid; algebra uuid;
 begin
  select id into platform_author from profiles where role='platform_admin' limit 1;
  select id into school_author from profiles where role='school_admin' and school_id=(select id from schools where slug='greenfield-academy') limit 1;
@@ -30,8 +30,6 @@ begin
  (mathematics,algebra,'lesson','Introduction','DEMO lesson.','published','global',platform_author,platform_author,now(),1),
  (mathematics,algebra,'lesson','Basic Equations','DEMO lesson.','published','global',platform_author,platform_author,now(),2),
  (mathematics,algebra,'lesson','Two-Step Equations','DEMO lesson.','published','global',platform_author,platform_author,now(),3);
- insert into content_nodes(course_id,parent_id,content_type,title,body,status,scope,created_by,approved_by,approved_at,sort_order)
- values(mathematics,algebra,'lesson','Algebraic Word Problems','DEMO lesson.','published','global',platform_author,platform_author,now(),4) returning id into word_problems;
  insert into courses(scope,title,slug,description,content_family,difficulty,status,created_by,approved_by,approved_at)
  values('global','Web Creator','demo-web-creator','DEMO: project-based web pathway.','skills','beginner','published',platform_author,platform_author,now()) returning id into web_creator;
  insert into content_nodes(course_id,content_type,title,body,status,scope,created_by,approved_by,approved_at,sort_order) values
@@ -40,8 +38,6 @@ begin
  (web_creator,'module','CSS Foundations','DEMO module.','published','global',platform_author,platform_author,now(),3);
  if school_author is not null then
   insert into school_course_adoptions(school_id,course_id,adopted_by) values(greenfield,mathematics,school_author);
-  insert into content_nodes(course_id,content_type,title,body,status,scope,school_id,source_content_id,is_override,created_by,approved_by,approved_at,sort_order)
-  values(mathematics,'lesson','Algebraic Word Problems','DEMO: Greenfield-localized examples.','published','school',greenfield,word_problems,true,school_author,school_author,now(),4);
  end if;
  insert into tags(name,slug) values('algebra','algebra'),('problem-solving','problem-solving'),('beginner','beginner'),('web','web'),('coding','coding'),('entrepreneurship','entrepreneurship'),('project-based','project-based') on conflict do nothing;
 end $$;
