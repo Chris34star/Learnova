@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "test:nuru": "node tests/stage5-nuru.test.mjs",
     "test:learning": "node tests/stage6-learning.test.mjs",
-    "test:assessment": "node tests/stage7-assessment.test.mjs"
+    "test:assessment": "node tests/stage7-assessment.test.mjs",
+    "test:recommendations": "node tests/stage8-recommendation.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
