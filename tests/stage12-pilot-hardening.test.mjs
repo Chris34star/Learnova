@@ -3,6 +3,7 @@ import {readFileSync,readdirSync} from 'node:fs';
 import {join} from 'node:path';
 
 const migration=readFileSync('supabase/migrations/202609040005_stage12_pilot_hardening.sql','utf8');
+const identityMigration=readFileSync('supabase/migrations/202609040006_stage12_identity_integrity.sql','utf8');
 const edge=readFileSync('supabase/functions/nuru-tutor/index.ts','utf8');
 const provider=readFileSync('supabase/functions/nuru-tutor/provider.ts','utf8');
 const assessment=readFileSync('supabase/migrations/202609030005_stage7_assessment_mastery.sql','utf8');
@@ -20,6 +21,8 @@ assert.match(migration,/drop policy if exists projects_student_write/);
 assert.match(migration,/milestones_read[\s\S]*owns_student\(p\.student_id\)[\s\S]*teacher_can_view_student\(p\.student_id\)/);
 assert.match(migration,/interventions_teacher_update[\s\S]*teacher_id=.*auth\.uid\(\)[\s\S]*teacher_can_view_student\(student_id\)/);
 assert.match(content,/current_profile_role\(\)='student' and status='published' and approved_at is not null/);
+assert.match(identityMigration,/protect_profile_authority[\s\S]*new\.user_id, new\.school_id, new\.role[\s\S]*not public\.is_platform_admin\(\)/,'browser-issued updates cannot rewrite identity authority');
+assert.match(identityMigration,/revoke execute on function public\.protect_profile_authority\(\) from public, anon, authenticated/);
 
 // Assessment delivery exposes a projection without answer fields; grading remains a caller-owned server RPC.
 const projection=assessment.match(/create view public\.student_question_bank[\s\S]*?from questions q where[^;]+;/)?.[0]??'';
@@ -37,6 +40,7 @@ for(const fn of ['submit_question_answer','accept_content_proposal','authorize_n
 assert.match(edge,/client\.auth\.getUser\(\)/);
 assert.match(edge,/ALLOWED_ORIGINS/);
 assert.doesNotMatch(edge,/Access-Control-Allow-Origin['"]?\s*:\s*['"]\*/);
+assert.match(edge,/origin&&!allowedOrigins\.has\(origin\)[\s\S]*nuru_origin_denied[\s\S]*403/,'disallowed POST origins must be rejected before consuming provider credit');
 assert.match(edge,/nuru_build_context/);
 assert.match(edge,/mode==='assessment'/);
 assert.match(edge,/requests_per_ten_minutes/);
