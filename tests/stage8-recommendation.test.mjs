@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {recommend,validateGraph} from '../src/services/recommendationEngine.ts';
 const course=(id,extra={})=>({id,targetType:'course',title:id,status:'published',enabled:true,...extra});
 const base={grade:7,completedIds:new Set(['html','css']),strongSkillIds:new Set(),interestKeys:new Set(['ai']),feedback:[],popularTargetIds:new Set(),candidates:[]};
@@ -18,4 +19,10 @@ assert.deepEqual(validateGraph([{id:'a',status:'published'},{id:'b',status:'publ
 assert.ok(validateGraph([{id:'a',status:'published'}],[{sourceId:'a',targetId:'a',type:'prerequisite',required:true}]).includes('Self-reference is not allowed.'));
 assert.ok(validateGraph([{id:'a',status:'published'}],[{sourceId:'a',targetId:'missing',type:'related'}]).includes('Relationship contains a missing target.'));
 assert.ok(validateGraph([{id:'a',status:'published'},{id:'b',status:'archived'}],[{sourceId:'a',targetId:'b',type:'prerequisite',required:true}]).some(x=>x.includes('archived')));
+const hardening=readFileSync(new URL('../supabase/migrations/202609040001_stage8_recommendation_availability.sql',import.meta.url),'utf8');
+assert.match(hardening,/student_target_is_available\(me\.id,r\.target_id,r\.target_type\)/,'stored recommendations are re-authorized at read time');
+assert.match(hardening,/school_pathway_settings x[\s\S]*x\.enabled/,'disabled school pathways are rejected server-side');
+assert.match(hardening,/relationship_type='prerequisite'[\s\S]*event_type='course_completed'/,'project prerequisites are checked against completion evidence');
+assert.match(hardening,/if not student_target_is_available\(requested_student,requested_target,kind\)/,'teacher recommendations cannot bypass availability');
+assert.match(hardening,/left join content_nodes n on r\.target_type in \('content_node','project'\)/,'project metadata is resolved instead of returning a null target');
 console.log('Stage 8 RecommendationEngine: all behavioral cases passed.');

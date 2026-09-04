@@ -19,8 +19,8 @@ Verified 2026-09-03. **Automated result: 19 PASS, 0 FAIL. Environment-dependent 
 | Amani scenario | Responsive Design, AI Explorer and portfolio are eligible with distinct reasons | Unit scenario verifies next-level, explicit-interest and HTML+CSS prerequisite reasons and ranking | PASS | IDs/titles are fixture-independent inputs rather than UI hard-coding. |
 | Prerequisites | HTML-only excludes portfolio; HTML+CSS includes it | Both transitions execute in Stage 8 unit test | PASS | — |
 | Dismissal | Not interested persists and suppresses refresh recurrence | Unit test verifies strong suppression; RPC persists feedback and dismisses active row | PASS | — |
-| School availability | Disabled content is excluded regardless of interest | Unit test excludes `enabled=false`; school RPC updates tenant-scoped availability | PASS | — |
-| Teacher recommendation | Authorized teacher note appears; other tenants rejected; prerequisites remain required | Ranking/reason tested; RPC calls `teacher_can_view_student`; engine does not bypass candidate prerequisites | PASS | Class-target fan-out remains a documented follow-up. |
+| School availability | Disabled content is excluded regardless of interest | **Initial: FAIL** — materialized pathway recommendations were not rechecked when read. **Fix:** added the server-side `student_target_is_available` boundary for every recommendation read. **Retest: PASS** — contract test verifies enabled pathway, grade, publication and course adoption checks. | PASS | — |
+| Teacher recommendation | Authorized teacher note appears; other tenants rejected; prerequisites remain required | **Initial: FAIL** — the RPC checked the teacher/student relationship but trusted an arbitrary target UUID. **Fix:** the RPC now validates target type, publication, tenant/school availability, grade, and project prerequisites before insert. **Retest: PASS.** | PASS | Class-target fan-out remains a documented follow-up. |
 | Graph validation | Cycle, self-reference, missing and archived targets rejected/flagged | All four cases execute in unit tests; DB trigger prevents self/cycle writes | PASS | Cross-entity existence/publication checks are performed by application validation; DB trigger covers required cycles/self-reference. |
 | Mobile layout | Core Stage 8 screens remain usable at narrow widths | Responsive grids, wrapping actions and non-fixed cards are implemented | PASS | Pixel screenshot unavailable because this container has no browser binary; manual device QA remains required. |
 | Empty/error states | Cold start is helpful; errors allow retry | Explore shows interest CTA and school intro copy; fetch failure uses retry; interest writes show error | PASS | — |
@@ -44,6 +44,7 @@ Verified 2026-09-03. **Automated result: 19 PASS, 0 FAIL. Environment-dependent 
 2. There were no pathway-management or teacher-recommendation routes. Added role-protected routes and navigation.
 3. The first UI implementation used `String.replaceAll`, unsupported by the configured TypeScript target. Replaced it with a compatible regular expression and reran typecheck.
 4. Stage 8 had no database ownership boundary. Added RLS to every Stage 8 table and narrow security-definer RPCs that resolve the caller rather than trusting client-supplied school IDs.
+5. Materialized recommendations could outlive school availability changes, and teacher-created recommendations could point at unavailable targets. Added a read-time authorization boundary, hardened teacher insertion, and resolved project metadata through governed content nodes.
 
 ## Remaining limitations
 
