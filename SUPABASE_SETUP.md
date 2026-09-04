@@ -6,8 +6,8 @@ Create a Supabase project for the intended environment. Development, staging, an
 ## 2. Configure the browser client
 Copy `.env.example` to `.env.local` and provide the project URL and **anon** key. Never use a service-role key in Vite variables; every `VITE_` value is public to the browser.
 
-## 3. Run the migration
-With the Supabase CLI linked to the project, run `supabase db push`, or paste `supabase/migrations/202609030001_stage3_foundation.sql` into the SQL editor. The migration creates all Stage 3 tables, constraints, helpers, triggers, and RLS policies. RLS is enabled by the migration.
+## 3. Run all migrations
+With the Supabase CLI linked to the project, run `supabase db push`. Apply **every** timestamped file in `supabase/migrations` in filename order; do not apply only the foundation migration and do not make undocumented production edits in the SQL editor. The migrations create the complete MVP schema, constraints, helpers, triggers, indexes, grants, and RLS policies.
 
 ## 4. Create the first platform administrator safely
 1. In the Supabase dashboard, create a user under Authentication → Users.
@@ -18,10 +18,10 @@ With the Supabase CLI linked to the project, run `supabase db push`, or paste `s
    ```
 3. Sign in at `/login`. The role router opens `/platform`.
 
-School users require both an Auth user and a tenant-bound profile. Provision them from a trusted dashboard now; a future Edge Function can provide the admin workflow. The frontend intentionally does not create Auth users.
+School users require both an Auth user and a tenant-bound profile. Provision them from the trusted dashboard for the pilot. The frontend intentionally cannot create Auth users or assign privileged roles.
 
-## 5. Optional development school
-Run `supabase/seed.sql` manually to add Greenfield Academy, three grades/classes, and three global subjects. This file is never run automatically. Create school-user Auth accounts and linked profiles separately.
+## 5. Optional synthetic development data
+Run `supabase/seed.sql` manually only in development or an approved synthetic pilot environment. The file is never run automatically. Create school-user Auth accounts and linked profiles separately, and never represent seed identities as real learners.
 
 ## 6. Test permissions
 Create two test schools and one active account per role. Confirm in the UI and SQL/API client that:
@@ -36,5 +36,7 @@ Test tenant isolation using the anon key and real user access tokens, not the SQ
 ## 7. Start the app
 Run `npm install`, then `npm run dev`. Authentication sessions persist and refresh through Supabase Auth. Password recovery must include the deployed `/reset-password` URL in Authentication → URL Configuration.
 
-## Content architecture boundary
-Stage 3 does not create content tables. Stage 4 should model immutable/versioned content nodes separately from tenant overrides: global trees can then be inherited without copying, while school overrides reference individual source nodes. Draft, approval, and publish states must encode the rule: AI may suggest or draft only after authorization; humans approve; only approved versions publish.
+## 8. Edge Function and production configuration
+Deploy `nuru-tutor` and set `OPENAI_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, optional `NURU_AI_MODEL`, and the exact comma-separated HTTPS origins in `ALLOWED_ORIGINS`. These are server-side values; never prefix them with `VITE_`. Confirm the host applies `public/_headers`, SPA fallback, and HTTPS.
+
+Before admitting real pilot data, complete the two-school token attack matrix, production smoke test, and backup/restore rehearsal described in the root README. Supabase backup/PITR availability depends on the selected project plan and must be confirmed in the project dashboard.

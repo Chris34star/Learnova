@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "test": "npm run test:content && npm run test:nuru && npm run test:learning && npm run test:assessment && npm run test:recommendations && npm run test:tutor && npm run test:skills && npm run test:intelligence && npm run test:pilot",
     "test:content": "node tests/stage4-schema.test.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
@@ -16,7 +17,8 @@
     "test:recommendations": "node tests/stage8-recommendation.test.mjs",
     "test:tutor": "node tests/stage9-nuru.test.mjs",
     "test:skills": "node tests/stage10-skills-lab.test.mjs",
-    "test:intelligence": "node tests/stage11-intelligence.test.mjs"
+    "test:intelligence": "node tests/stage11-intelligence.test.mjs",
+    "test:pilot": "node tests/stage12-pilot-hardening.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
