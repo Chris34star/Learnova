@@ -20,6 +20,11 @@ Deno.serve(async(req)=>{
  const respond=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{...corsHeaders(req),'content-type':'application/json','x-request-id':requestId}});
  if(req.method==='OPTIONS')return req.headers.get('origin')&&allowedOrigins.has(req.headers.get('origin')!)?new Response(null,{status:204,headers:corsHeaders(req)}):respond({error:'Origin is not allowed'},403);
  if(req.method!=='POST')return respond({error:'Method not allowed'},405);
+ const origin=req.headers.get('origin');
+ if(origin&&!allowedOrigins.has(origin)){
+  console.warn(JSON.stringify({level:'warn',event:'nuru_origin_denied',requestId,timestamp:new Date().toISOString()}));
+  return respond({error:'Origin is not allowed'},403);
+ }
  try{
   const auth=req.headers.get('authorization');
   if(!auth)return respond({error:'Authentication required'},401);

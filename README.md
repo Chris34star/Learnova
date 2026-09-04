@@ -33,7 +33,7 @@ Learnova is a multi-tenant EdTech MVP for governed school learning, deterministi
 
 ## Database, security, and privacy
 
-Apply every timestamped file in `supabase/migrations` in order. They are the source of truth for schema, constraints, indexes, triggers, functions, and RLS; do not maintain unrecorded production SQL. The Stage 12 migration closes teacher publication and tenant-rebinding gaps, restricts sensitive RPC execution to authenticated callers, bounds important inputs, and adds indexes matching pilot query paths.
+Apply every timestamped file in `supabase/migrations` in order. They are the source of truth for schema, constraints, indexes, triggers, functions, and RLS; do not maintain unrecorded production SQL. The Stage 12 migrations close teacher publication and tenant-rebinding gaps, prevent browser-issued changes to authoritative profile role/user/tenant fields, restrict sensitive RPC execution to authenticated callers, bound important inputs, and add indexes matching pilot query paths.
 
 Assessment answer keys remain in protected base tables. Students receive the `student_question_bank` projection through caller-owned RPCs, without `answer_data_json`, option correctness, or explanations; grading occurs in `submit_question_answer`, which locks and verifies the student's active attempt before returning post-answer feedback. Nuru secrets and the Supabase service-role key exist only in the Edge Function environment.
 
@@ -111,7 +111,7 @@ The automated suites cover schema/governance contracts, learning, deterministic 
 
 ## Production health
 
-Use hosting deployment alerts plus Supabase database/Auth/Edge Function logs. Nuru emits structured `nuru_success`, `nuru_unauthorized`, `nuru_context_denied`, and `nuru_failure` events with timestamp and request ID while avoiding prompt/context logging. Configure a simple alert for repeated function 5xx/provider failures and review auth/database errors during the controlled pilot. Do not add a large observability platform until pilot evidence warrants it.
+Use hosting deployment alerts plus Supabase database/Auth/Edge Function logs. Nuru emits structured `nuru_success`, `nuru_unauthorized`, `nuru_origin_denied`, `nuru_context_denied`, and `nuru_failure` events with timestamp and request ID while avoiding prompt/context logging. Configure a simple alert for repeated function 5xx/provider failures and review auth/database errors during the controlled pilot. Do not add a large observability platform until pilot evidence warrants it.
 
 ## Known MVP limitations
 
