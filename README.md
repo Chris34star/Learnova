@@ -30,19 +30,23 @@ React 18, TypeScript, Vite, React Router, Tailwind CSS, Lucide, Supabase/Postgre
 8. Skill graph, interests, pathways, explainable Explore Next recommendations, and school availability.
 9. Contextual student Nuru with server-derived modes, assessment safeguards, limits, and feedback.
 10. Project-first Skills Lab with pathways, challenges, milestones, submissions, teacher review, moderate project evidence, assignments, and private portfolios.
+11. Teacher and school intelligence with evidence-aware class opportunities, explainable interventions, flexible daily plans, grade study guidance, and exam-mode prioritization.
 
 ## Database Architecture
 Timestamped migrations in `supabase/migrations` define tenant-aware tables, enums, functions, and RLS. Stage 10 adds governed `projects` and `project_milestones`; upgrades `student_projects` and milestone progress; and adds `project_reviews`, `student_challenge_attempts`, `learning_assignments`, and distinct `project_skill_evidence`. Project percentage is derived from required milestones. Project evidence is configurable and capped at moderate weight; it does not imply full mastery or replace assessment evidence.
+
+Stage 11 adds `grade_learning_settings`, `exam_modes`, and `learning_interventions`. Secure RPCs compute class and school intelligence from source learning records rather than persisting opaque risk scores. Class insights require configured mastery evidence and medium confidence; completion and understanding are returned separately. Grade duration and study windows are planning guidance only and never mastery evidence. Exam mode temporarily promotes required and relevant work while keeping Skills Lab work available.
 
 Development seeds provide only two focused examples: **Web Creator → Personal Website** and **Young Entrepreneur → Mini Business Pitch**. Seeds are optional and require provisioned accountable profiles.
 
 ## Main Routes
 - Public: `/`, `/demo`, `/launch`, `/login`
 - Student learning: `/app`, `/app/learn`, `/app/course/:courseId`, `/app/lesson/:lessonId`, `/app/practice`
+- Student planning: `/app/schedule`
 - Student discovery: `/app/explore`, `/app/interests`, `/app/skills`, `/app/skills/:pathwayId`
 - Project work: `/app/project/:studentProjectId`, `/app/portfolio`
-- Teacher: `/teacher`, `/teacher/students`, `/teacher/projects`, `/teacher/assignments`, `/teacher/recommend`
-- School: `/school`, `/school/content`, `/school/pathways`, `/school/analytics`, `/school/settings`
+- Teacher: `/teacher`, `/teacher/classes`, `/teacher/classes/:classId/insights`, `/teacher/students`, `/teacher/projects`, `/teacher/assignments`, `/teacher/recommend`
+- School: `/school`, `/school/content`, `/school/pathways`, `/school/analytics`, `/school/schedule`, `/school/settings`
 - Platform: `/platform`, `/platform/content`, `/platform/pathways`
 
 ## Security Model
@@ -80,6 +84,7 @@ npm run test:assessment
 npm run test:recommendations
 npm run test:tutor
 npm run test:skills
+npm run test:intelligence
 ```
 
 ## Deployment Notes
